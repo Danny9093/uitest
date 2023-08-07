@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 const InstitutionTable = () => {
   const [myInstitutions, setMyInstitutions] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   useEffect(() => {
     const callAPI = (keyword, scope, createinstitutionid) => {
@@ -34,12 +35,16 @@ const InstitutionTable = () => {
     callAPI(/* provide your keyword, scope, and createinstitutionid values */);
   }, []);
 
+  const filteredInstitutions = myInstitutions.filter(institution =>
+    institution.IpedsName.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+
   const renderTable = () => {
-    if (myInstitutions.length === 0) {
-      return null;
+    if (filteredInstitutions.length === 0) {
+      return <p>No institutions found.</p>;
     }
 
-    const col = Object.keys(myInstitutions[0]);
+    const col = Object.keys(filteredInstitutions[0]);
 
     return (
       <table>
@@ -51,7 +56,7 @@ const InstitutionTable = () => {
           </tr>
         </thead>
         <tbody>
-          {myInstitutions.map((institution, index) => (
+          {filteredInstitutions.map((institution, index) => (
             <tr key={index}>
               {col.map((key, innerIndex) => (
                 <td key={innerIndex}>{institution[key]}</td>
@@ -65,13 +70,15 @@ const InstitutionTable = () => {
 
   return (
     <div>
+      <input
+        type="text"
+        placeholder="Search by institution name"
+        value={searchKeyword}
+        onChange={e => setSearchKeyword(e.target.value)}
+      />
       {renderTable()}
     </div>
   );
 };
 
 export default InstitutionTable;
-
-
-
-/*export default App;*/
